@@ -8,17 +8,12 @@ redis>=4.5.4
 django-celery-beat>=2.5.0
 tmdbsimple>=2.9.1
 google-api-python-client>=2.86.0
-scikit-learn>=1.2.2
-tensorflow>=2.12.0
-python-jose>=3.3.0
-pytest>=7.3.1
-pytest-django>=4.5.2
-black>=23.3.0
-isort>=5.12.0
-flake8>=6.0.0
-channels>=4.0.0
-channels-redis>=4.1.0
 numpy>=1.24.3
+tensorflow-macos==2.13.0  # Specifically for macOS
+tensorflow-metal==1.0.0   # For Apple M1/M2 GPU support
 gunicorn==21.2.0
 whitenoise==6.6.0
 dj-database-url==2.1.0
+Pillow>=10.0.0
+channels>=4.0.0
+channels-redis>=4.1.0

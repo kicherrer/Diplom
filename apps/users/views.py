@@ -1,24 +1,33 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from .models import User
 from .serializers import UserSerializer, UserUpdateSerializer
-
-User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
+    serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def get_serializer_class(self):
-        if self.action in ['update', 'partial_update']:
+        if self.action == 'update' or self.action == 'partial_update':
             return UserUpdateSerializer
         return UserSerializer
 
-    @action(detail=False, methods=['get'])
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        if pk == "me":
+            return self.request.user
+        return super().get_object()
+
+    @action(detail=False)
     def me(self, request):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        serializer.save()
 
     @action(detail=False, methods=['post'])
     def update_mood(self, request):

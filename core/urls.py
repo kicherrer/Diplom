@@ -17,21 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from apps.media.api.views import MovieViewSet, SeriesViewSet, VideoViewSet
-from django.conf import settings
-from django.conf.urls.static import static
 from apps.users.views import UserViewSet
-from apps.cinema.api.views import CinemaRoomViewSet
 
 router = DefaultRouter()
-router.register(r'movies', MovieViewSet)
-router.register(r'series', SeriesViewSet)
-router.register(r'videos', VideoViewSet)
 router.register(r'users', UserViewSet)
-router.register(r'cinema-rooms', CinemaRoomViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

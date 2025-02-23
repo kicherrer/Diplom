@@ -7,7 +7,7 @@ class ChatRoom(models.Model):
     is_private = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255, null=True, blank=True)
-    avatar = models.ImageField(upload_to='chat_rooms/', null=True, blank=True)
+    avatar = models.ImageField(upload_to='chat_room_avatars/', null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -36,7 +36,7 @@ class ChatRoom(models.Model):
 
 class ChatMessage(models.Model):
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_messages')
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     read_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='read_messages')

@@ -16,6 +16,10 @@ class CinemaRoom(models.Model):
 
 class ChatMessage(models.Model):
     room = models.ForeignKey(CinemaRoom, on_delete=models.CASCADE, related_name='messages')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='cinema_chat_messages'  # Add this
+    )
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
