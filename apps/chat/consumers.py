@@ -5,46 +5,62 @@ from apps.notifications.services import NotificationService
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        self.room_id = self.scope['url_route']['kwargs']['room_id']
+        self.room_group_name = f'chat_{self.room_id}'
+
+        # Join room group
         await self.channel_layer.group_add(
-            "chat",
+            self.room_group_name,
             self.channel_name
         )
+
         await self.accept()
 
     async def disconnect(self, close_code):
+        # Leave room group
         await self.channel_layer.group_discard(
-            "chat",
+            self.room_group_name,
             self.channel_name
         )
 
     async def receive_json(self, content):
-        message_type = content.get('type')
-        if message_type == 'chat_message':
-            message = await self.save_message(content)
+        message_type = content.get('type', 'message')
+        
+        if message_type == 'message':
+            message = content.get('message', '')
+            user = self.scope['user']
+            
+            # Save message to database
+            await self.save_message(user, message)
+            
+            # Send message to room group
             await self.channel_layer.group_send(
-                "chat",
+                self.room_group_name,
                 {
-                    "type": "chat.message",
-                    "message": message
+                    'type': 'chat_message',
+                    'message': message,
+                    'user_id': user.id,
+                    'username': user.username
                 }
             )
 
     async def chat_message(self, event):
-        await self.send_json(event["message"])
+        # Send message to WebSocket
+        await self.send_json({
+            'type': 'message',
+            'message': event['message'],
+            'user_id': event['user_id'],
+            'username': event['username']
+        })
 
     @database_sync_to_async
-    def save_message(self, content):
-        message = ChatMessage.objects.create(
-            sender_id=content['sender'],
-            content=content['content']
+    def save_message(self, user, message):
+        room = ChatRoom.objects.get(id=self.room_id)
+        return ChatMessage.objects.create(
+            room=room,
+            sender=user,
+            content=message
         )
-        return {
-            'id': str(message.id),
-            'sender': message.sender_id,
-            'content': message.content,
-            'timestamp': message.timestamp.isoformat(),
-            'sender_avatar': message.sender.avatar.url if message.sender.avatar else None
-        }
 
 class PrivateChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):

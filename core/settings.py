@@ -70,6 +70,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+ASGI_APPLICATION = 'core.asgi.application'
+
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///db.sqlite3',
