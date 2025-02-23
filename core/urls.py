@@ -16,21 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.http import HttpResponse
 
 def index(request):
-    return JsonResponse({
-        "status": "ok",
-        "message": "Django API is running",
-        "endpoints": {
-            "admin": "/admin/",
-            "api": "/api/",
-            "health": "/health/"
-        }
-    })
+    return render(request, 'index.html')
+
+def health_check(request):
+    return HttpResponse("OK")
 
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
-    path('health/', lambda request: HttpResponse("OK")),
+    path('health/', health_check, name='health'),
 ]
