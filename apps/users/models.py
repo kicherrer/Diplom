@@ -16,6 +16,8 @@ class User(AbstractUser):
     current_mood = models.CharField(max_length=20, choices=MOOD_CHOICES, null=True, blank=True)
     watch_history = models.JSONField(default=list, blank=True)
     friends = models.ManyToManyField('self', blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
 class Achievement(models.Model):
     TYPES = [

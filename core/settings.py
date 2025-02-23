@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -5,7 +6,9 @@ import dj_database_url
 
 load_dotenv()
 
+# Add the parent directory to Python path
 BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))  # Добавляем корневую директорию в Python path
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')
 
@@ -27,11 +30,11 @@ INSTALLED_APPS = [
     'channels',
     
     # Local apps
-    'apps.users.apps.UsersConfig',
-    'apps.chat.apps.ChatConfig',
-    'apps.cinema.apps.CinemaConfig',  # Add this line
-    'apps.analytics.apps.AnalyticsConfig',
-    'apps.media.apps.MediaConfig',
+    'apps.users',  # Измените это
+    'apps.chat',
+    'apps.cinema',
+    'apps.analytics',
+    'apps.media',
 ]
 
 MIDDLEWARE = [
