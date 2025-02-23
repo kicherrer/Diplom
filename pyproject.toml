@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "diplom"
+version = "0.1.0"
+description = ""
+
+[tool.poetry.dependencies]
+python = "^3.9.6"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

@@ -1,19 +1,17 @@
-Django>=4.2.0
-djangorestframework>=3.14.0
-django-cors-headers>=4.3.1
-python-dotenv>=1.0.0
-psycopg2-binary==2.9.9
-celery>=5.3.0
-redis>=4.5.4
-django-celery-beat>=2.5.0
-tmdbsimple>=2.9.1
-google-api-python-client>=2.86.0
-numpy>=1.24.3
-tensorflow-macos==2.13.0  # Specifically for macOS
-tensorflow-metal==1.0.0   # For Apple M1/M2 GPU support
-gunicorn==21.2.0
-whitenoise==6.6.0
-dj-database-url==2.1.0
-Pillow>=10.0.0
-channels>=4.0.0
-channels-redis>=4.1.0
+Django==3.2.20
+djangorestframework==3.12.4
+django-cors-headers==3.10.1
+python-dotenv==0.19.2
+psycopg2-binary==2.9.3
+celery==5.2.7
+redis==4.1.4
+django-celery-beat==2.2.1
+google-api-python-client==2.86.0
+numpy==1.21.6
+tensorflow==2.9.1
+gunicorn==20.1.0
+whitenoise==5.3.0
+dj-database-url==0.5.0
+Pillow==9.5.0
+channels==3.0.5
+channels-redis==3.4.1
