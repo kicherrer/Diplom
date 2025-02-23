@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+import { ApiChatRoom, ChatRoom } from '../types/chat';
 
 // Add interfaces for API responses
 export interface AdminAnalytics {
@@ -139,7 +140,7 @@ export interface SharedRecommendation {
   common_interests: string[];
 }
 
-export interface ChatRoom {
+export interface LocalChatRoom {  // Renamed from ChatRoom to LocalChatRoom
   id: string;
   participants: Array<{
     id: string;
@@ -329,8 +330,28 @@ export const api = {
       client.get(`/users/${userId}/ratings/analytics/`),
   },
   chat: {
-    getRooms: (): Promise<AxiosResponse<ApiResponse<ChatRoom[]>>> =>
-      client.get('/chat/rooms/'),
+    getRooms: async () => {
+      const response = await axios.get<ApiResponse<ApiChatRoom[]>>('/api/chat/rooms/');
+      // Transform API response to internal format
+      return {
+        ...response,
+        data: {
+          ...response.data,
+          data: response.data.data.map(room => ({
+            ...room,
+            id: Number(room.id),
+            participants: room.participants.map(p => ({
+              ...p,
+              id: Number(p.id)
+            })),
+            last_message: room.last_message ? {
+              ...room.last_message,
+              sender_id: Number(room.last_message.sender_id)
+            } : null
+          }))
+        }
+      };
+    },
     getMessages: (roomId: string): Promise<AxiosResponse<ApiResponse<ChatMessage[]>>> =>
       client.get(`/chat/rooms/${roomId}/messages/`),
     createRoom: (userId: string): Promise<AxiosResponse<ApiResponse<ChatRoom>>> =>

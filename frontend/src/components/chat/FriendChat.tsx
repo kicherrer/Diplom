@@ -25,8 +25,8 @@ import { MessageSearch } from './MessageSearch';
 import { debounce } from 'lodash';
 
 interface Message {
-  id: string;
-  sender_id: string;  // Changed from sender to sender_id
+  id: number;
+  sender_id: number;
   content: string;
   timestamp: string;
   sender_avatar?: string;
@@ -47,7 +47,7 @@ export const FriendChat: React.FC = () => {
   const [messageText, setMessageText] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [selectedRoom, setSelectedRoom] = useState<string | undefined>(undefined);
+  const [selectedRoom, setSelectedRoom] = useState<number | undefined>(undefined);
   const [typingUsers, setTypingUsers] = useState<Record<string, number>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -77,7 +77,7 @@ export const FriendChat: React.FC = () => {
         sendMessage(JSON.stringify({
           type: 'private_message',
           content: messageText,
-          room_id: selectedRoom,
+          room_id: selectedRoom.toString(),
           sender: user.id
         }));
         setMessageText('');
@@ -94,15 +94,20 @@ export const FriendChat: React.FC = () => {
     }
   }, [handleSend]);
 
-  const handleRoomSelect = useCallback((roomId: string) => {
+  const handleRoomSelect = useCallback((roomId: number) => {
     setSelectedRoom(roomId);
     setMessages([]);
     
     if (roomId) {
-      api.chat.getMessages(roomId)
+      api.chat.getMessages(roomId.toString())
         .then((response) => {
           if (response.data.data) {
-            setMessages(response.data.data);
+            const convertedMessages: Message[] = response.data.data.map(msg => ({
+              ...msg,
+              id: Number(msg.id),
+              sender_id: Number(msg.sender_id)
+            }));
+            setMessages(convertedMessages);
           }
         })
         .catch(console.error);
@@ -126,7 +131,7 @@ export const FriendChat: React.FC = () => {
     [sendMessage, user?.id]
   );
 
-  const handleMessageSelect = (messageId: string) => {
+  const handleMessageSelect = (messageId: number) => {
     const message = messages.find(msg => msg.id === messageId);
     if (message && messagesEndRef.current) {
       const element = document.getElementById(`message-${messageId}`);
@@ -179,7 +184,7 @@ export const FriendChat: React.FC = () => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('room_id', selectedRoom);
+    formData.append('room_id', selectedRoom.toString());
     
     try {
       const response = await api.chat.uploadAttachment(formData);
@@ -264,7 +269,7 @@ export const FriendChat: React.FC = () => {
                   >
                     <ListItem
                       sx={{
-                        flexDirection: msg.sender_id === user.id?.toString() ? 'row-reverse' : 'row',
+                        flexDirection: msg.sender_id === Number(user?.id) ? 'row-reverse' : 'row',
                         gap: 1,
                       }}
                     >
@@ -273,8 +278,8 @@ export const FriendChat: React.FC = () => {
                         sx={{
                           p: 1,
                           maxWidth: '70%',
-                          bgcolor: msg.sender_id === user.id?.toString() ? 'primary.main' : 'background.paper',
-                          color: msg.sender_id === user.id?.toString() ? 'primary.contrastText' : 'text.primary',
+                          bgcolor: msg.sender_id === Number(user?.id) ? 'primary.main' : 'background.paper',
+                          color: msg.sender_id === Number(user?.id) ? 'primary.contrastText' : 'text.primary',
                         }}
                       >
                         <Typography variant="body2">{msg.content}</Typography>

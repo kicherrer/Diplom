@@ -1,7 +1,12 @@
 import React, { createContext, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { User, AuthContextValue, AuthState } from '../types/auth';
+import { AuthState, User } from '../types/auth';
+
+// Export the interface
+export interface AuthContextValue extends AuthState {
+  loading: boolean;
+}
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -16,20 +21,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return {
-    ...context,
-    loading: context.isLoading // Alias isLoading as loading for backward compatibility
-  };
-};
+// Remove duplicate useAuth export since we're moving it to a separate file
 
 interface AuthContextType {
   user: User | null;
-  // ...existing interface properties...
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  token: string | null;
+  error: string | null;
 }
 
 const initialState: AuthState = {

@@ -56,3 +56,9 @@ export interface UserSearchProps {
   excludeIds?: number[];  // Changed from string[] to number[]
   // ...other props
 }
+
+export interface ApiResponse<T> {
+  data: T;
+  status: 'success' | 'error';
+  message?: string;
+}

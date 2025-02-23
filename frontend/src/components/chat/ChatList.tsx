@@ -16,39 +16,30 @@ import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { api } from '../../api/client';
+import { ChatRoom, ApiResponse, ChatParticipant } from '../../types/chat';
+import { User } from '../../types/auth';
 import { AxiosResponse } from 'axios';
 
-interface ChatRoom {
-  id: number;  // Changed from string to number
-  participants: Array<{
-    id: number;  // Changed from string to number
-    username: string;
-    avatar: string | null;
-  }>;
-  last_message: {
-    content: string;
-    timestamp: string;
-    sender_id: number;  // Changed from string to number
-  } | null;
-  unread_count: number;
-}
-
-import { User } from '../../types/auth';
-
 interface ChatListProps {
-  onRoomSelect: (roomId: number) => void;  // Changed from string to number
-  selectedRoomId?: number;  // Changed from string to number
+  onRoomSelect: (roomId: number) => void;
+  selectedRoomId?: number;
 }
 
-export const ChatList: React.FC<ChatListProps> = ({ onRoomSelect, selectedRoomId }): JSX.Element => {
+export const ChatList: React.FC<ChatListProps> = ({ onRoomSelect, selectedRoomId }) => {
   const { t } = useTranslation();
   const currentUser = useSelector((state: RootState) => state.auth.user as User);
-  const { data: rooms } = useCachedQuery<ChatRoom[]>('chat-rooms', () => api.chat.getRooms());
+  
+  const { data: rooms = [] } = useCachedQuery<ChatRoom[]>(
+    'chat-rooms',
+    () => api.chat.getRooms()
+  );
 
   return (
     <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      {Array.isArray(rooms) && rooms.map((room) => {
-        const otherParticipant = room.participants.find((p) => p.id !== currentUser?.id);
+      {rooms.map((room: ChatRoom) => {
+        const otherParticipant = room.participants.find(
+          (p: ChatParticipant) => p.id !== currentUser?.id
+        );
         
         return (
           <motion.div

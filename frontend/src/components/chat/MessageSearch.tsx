@@ -12,15 +12,21 @@ import {
 import { Search, Close } from '@mui/icons-material';
 import { debounce } from 'lodash';
 
+interface Message {
+  id: number;  // Changed from string to number
+  content: string;
+  timestamp: string;
+}
+
 interface MessageSearchProps {
-  messages: any[];
-  onMessageSelect: (messageId: string) => void;
+  messages: Message[];
+  onMessageSelect: (messageId: number) => void;  // Changed from string to number
 }
 
 export const MessageSearch: React.FC<MessageSearchProps> = ({ messages, onMessageSelect }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<Message[]>([]);
 
   const handleSearch = useCallback(
     debounce((term: string) => {
@@ -40,6 +46,11 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({ messages, onMessag
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     handleSearch(e.target.value);
+  };
+
+  const handleSelect = (messageId: number) => {  // Changed from string to number
+    onMessageSelect(messageId);
+    setAnchorEl(null);
   };
 
   return (
@@ -76,10 +87,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({ messages, onMessag
               <ListItem
                 key={msg.id}
                 button
-                onClick={() => {
-                  onMessageSelect(msg.id);
-                  setAnchorEl(null);
-                }}
+                onClick={() => handleSelect(msg.id)}
               >
                 <ListItemText
                   primary={msg.content}
