@@ -97,7 +97,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = 'media/'
@@ -130,3 +130,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # API Keys
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
+
+# Оптимизация для бесплатного тарифа
+CONN_MAX_AGE = 600
+SECURE_SSL_REDIRECT = True

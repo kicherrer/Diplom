@@ -2,8 +2,12 @@ services:
   - type: web
     name: diplom-backend
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate
+    startCommand: gunicorn core.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.6
@@ -19,27 +23,13 @@ services:
         fromDatabase:
           name: diplom-db
           property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: diplom-redis
-          type: redis
-          property: connectionString
       - key: WEB_CONCURRENCY
-        value: 4
+        value: 2  # Уменьшено для free tier
       - key: PYTHONUNBUFFERED
         value: 1
-
-  - type: redis
-    name: diplom-redis
-    ipAllowList: []
-    plan: free
 
 databases:
   - name: diplom-db
     databaseName: mediadb
     user: diplom
     plan: free
-
-volumes:
-  - name: redis_data
-    mountPath: /data
