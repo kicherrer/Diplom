@@ -18,21 +18,35 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import HttpResponse, JsonResponse
 from rest_framework.routers import DefaultRouter
 from apps.users.views import UserViewSet
 from apps.chat.api.views import ChatViewSet
 from apps.analytics.api.views import AnalyticsViewSet
 
-# Create router and register viewsets
+def index(request):
+    return JsonResponse({
+        "status": "ok",
+        "message": "Django API is running",
+        "endpoints": {
+            "admin": "/admin/",
+            "api": "/api/",
+            "health": "/health/"
+        }
+    })
+
+def health_check(request):
+    return HttpResponse("OK")
+
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'chat', ChatViewSet, basename='chat')
 router.register(r'analytics', AnalyticsViewSet, basename='analytics')
 
 urlpatterns = [
+    path('', index, name='index'),  # Добавляем корневой маршрут
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/auth/', include('rest_framework.urls')),
-    # Add health check endpoint for Render
-    path('health/', lambda request: HttpResponse("OK")),
+    path('health/', health_check, name='health'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

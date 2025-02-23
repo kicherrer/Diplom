@@ -14,7 +14,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
+# Обновляем ALLOWED_HOSTS чтобы включить домен Render
+ALLOWED_HOSTS = ['*']  # В продакшене лучше указать конкретные домены
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -126,6 +127,13 @@ CELERY_TASK_ALWAYS_EAGER = True
 
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+# Настройки безопасности для Render
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = False  # Изменено на False для Render
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # API Keys
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
